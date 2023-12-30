@@ -36,18 +36,18 @@ public class AutoCoyoteV3 extends LinearOpMode {
                 .build();
 
         drive.followTrajectory(traj1);
-        Pose2d startPose = new Pose2d(6, 6, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-66,66, Math.PI/2);
 
         Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(24)
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
-                .lineToSplineHeading(new Pose2d(24,36, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(-66,42,0))
                 .build();
 
         Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(),true)
-                .splineTo(new Vector2d(6,6), Math.toRadians(-90))
+                .splineToSplineHeading(new Pose2d(6,6,Math.PI),0)
                 .build();
 
         drive.followTrajectory(traj2);
