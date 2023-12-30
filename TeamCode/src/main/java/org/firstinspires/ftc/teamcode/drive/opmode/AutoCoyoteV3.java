@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -40,16 +41,20 @@ public class AutoCoyoteV3 extends LinearOpMode {
 
         Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(24)
-                .splineToSplineHeading(new Pose2d(24,36, Math.toRadians(-90)), Math.toRadians(-90))
                 .build();
 
-        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d(),true)
-                .splineToConstantHeading(new Vector2d(6,6), Math.toRadians(-90))
+        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
+                .lineToSplineHeading(new Pose2d(24,36, Math.toRadians(-90)))
+                .build();
+
+        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(),true)
+                .splineTo(new Vector2d(6,6), Math.toRadians(-90))
                 .build();
 
         drive.followTrajectory(traj2);
-        drive.turn(Math.toRadians(90));
         drive.followTrajectory(traj3);
+        drive.turn(Math.toRadians(90));
+        drive.followTrajectory(traj4);
 
         ;
     }
