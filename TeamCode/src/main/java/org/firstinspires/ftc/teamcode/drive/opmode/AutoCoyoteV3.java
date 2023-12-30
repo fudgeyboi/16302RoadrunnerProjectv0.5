@@ -21,8 +21,13 @@ public class AutoCoyoteV3 extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        telemetry.addLine("Ready");
+        telemetry.update();
 
         waitForStart();
+
+        telemetry.addLine("Running");
+        telemetry.update();
 
         if (isStopRequested()) return;
 
@@ -33,15 +38,15 @@ public class AutoCoyoteV3 extends LinearOpMode {
         drive.followTrajectory(traj1);
         Pose2d startPose = new Pose2d(6, 6, Math.toRadians(90));
 
-
         Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(24)
                 .splineToSplineHeading(new Pose2d(24,36, Math.toRadians(-90)), Math.toRadians(-90))
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(new Pose2d(),true)
-                .splineToConstantHeading(new Vector2d(6,6), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(6,6), Math.toRadians(-90))
                 .build();
+
         drive.followTrajectory(traj2);
         drive.turn(Math.toRadians(90));
         drive.followTrajectory(traj3);
