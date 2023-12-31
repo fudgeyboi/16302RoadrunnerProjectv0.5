@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -19,8 +18,7 @@ public class AutoCoyoteV3 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addLine("Ready");
         telemetry.update();
 
@@ -43,11 +41,11 @@ public class AutoCoyoteV3 extends LinearOpMode {
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
-                .lineToSplineHeading(new Pose2d(-66,42,0))
+                .lineToSplineHeading(new Pose2d(24,0,-90))
                 .build();
 
         Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(),true)
-                .splineToSplineHeading(new Pose2d(6,6,Math.PI),0)
+                .splineToSplineHeading(new Pose2d(-24,24,Math.toRadians(90)),Math.toRadians(0))
                 .build();
 
         drive.followTrajectory(traj2);
