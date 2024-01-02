@@ -38,7 +38,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     /* Lines 37-38 in StandardTrackingWheelLocalizer.java */
     public static double X_MULTIPLIER = 1.21812629366; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction
+    public static double Y_MULTIPLIER = 1.1214; // Multiplier in the Y direction
 
     private List<Integer> lastEncPositions, lastEncVels;
 
