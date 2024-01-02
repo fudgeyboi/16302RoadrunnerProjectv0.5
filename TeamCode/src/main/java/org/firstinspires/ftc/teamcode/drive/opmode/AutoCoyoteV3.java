@@ -44,7 +44,7 @@ public class AutoCoyoteV3 extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(24,0,-90))
                 .build();
 
-        Trajectory traj4 = drive.trajectoryBuilder(traj1.end().plus(new Pose2d(0, 0, Math.toRadians(90))), true)
+        Trajectory traj4 = drive.trajectoryBuilder(traj3.end().plus(new Pose2d(0, 0, Math.toRadians(90))), true)
                 .splineToSplineHeading(new Pose2d(-24,24,Math.toRadians(90)),Math.toRadians(0))
                 .build();
 
