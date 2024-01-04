@@ -23,37 +23,29 @@ public class AutoCoyoteV3 extends LinearOpMode {
         telemetry.addLine("Ready");
         telemetry.update();
 
+        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(-60,12,Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
+                .build();
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
+                .build();
+
+        Trajectory traj3 = drive.trajectoryBuilder((traj2.end()))
+                .lineToSplineHeading(new Pose2d(-60,65,Math.toRadians(-90)))
+                .build();
+
         waitForStart();
 
         telemetry.addLine("Running");
         telemetry.update();
 
         if (isStopRequested()) return;
-
-        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(54)
-                .build();
+        drive.setPoseEstimate(new Pose2d(-60,12,Math.toRadians(0)));
 
         drive.followTrajectory(traj1);
-        Pose2d startPose = new Pose2d(-66,66, Math.toRadians(90));
-
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .strafeRight(24)
-                .build();
-
-        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(24,24,-90))
-                .build();
-
-        Trajectory traj4 = drive.trajectoryBuilder(traj3.end().plus(new Pose2d(0, 0, Math.toRadians(-90))), true)
-                .splineToConstantHeading(new Vector2d(-24,24),Math.toRadians(0))
-                .build();
-
         drive.followTrajectory(traj2);
         drive.followTrajectory(traj3);
-        drive.turn(Math.toRadians(-90));
-        drive.followTrajectory(traj4);
-
         ;
     }
 }
