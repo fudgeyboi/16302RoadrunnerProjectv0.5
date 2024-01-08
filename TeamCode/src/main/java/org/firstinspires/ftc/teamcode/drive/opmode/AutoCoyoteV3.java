@@ -19,10 +19,21 @@ public class AutoCoyoteV3 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addLine("Ready");
         telemetry.update();
+
+        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(-60,12,Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
+                .build();
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
+                .build();
+
+        Trajectory traj3 = drive.trajectoryBuilder((traj2.end()))
+                .lineToSplineHeading(new Pose2d(-60,65,Math.toRadians(-90)))
+                .build();
 
         waitForStart();
 
@@ -30,31 +41,11 @@ public class AutoCoyoteV3 extends LinearOpMode {
         telemetry.update();
 
         if (isStopRequested()) return;
-
-        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(30)
-                .build();
+        drive.setPoseEstimate(new Pose2d(-60,12,Math.toRadians(0)));
 
         drive.followTrajectory(traj1);
-        Pose2d startPose = new Pose2d(-66,66, Math.PI/2);
-
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(24)
-                .build();
-
-        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
-                .lineToSplineHeading(new Pose2d(-66,42,0))
-                .build();
-
-        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(),true)
-                .splineToSplineHeading(new Pose2d(6,6,Math.PI),0)
-                .build();
-
         drive.followTrajectory(traj2);
         drive.followTrajectory(traj3);
-        drive.turn(Math.toRadians(90));
-        drive.followTrajectory(traj4);
-
         ;
     }
 }
