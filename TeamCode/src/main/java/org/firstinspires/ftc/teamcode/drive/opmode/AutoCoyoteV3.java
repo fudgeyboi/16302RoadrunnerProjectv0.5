@@ -32,14 +32,13 @@ public class AutoCoyoteV3 extends TeleOp {
         drive.setPoseEstimate(new Pose2d(-60,12,Math.toRadians(0)));
         TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(-60,12,Math.toRadians(0)))
                 .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
-                .addDisplacementMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(-1, () -> {
                     arm.setTargetPosition(500);
                     arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                     arm.setVelocity(Math.toRadians(720), AngleUnit.RADIANS);
-                })
-                .addTemporalMarker(4,() -> {
+        })
+                .UNSTABLE_addTemporalMarkerOffset(-0.1, () ->{
                     claw.setPosition(0);
-                    eintake.setPosition(1);
                 })
                 .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
                 .lineToSplineHeading(new Pose2d(-60,65,Math.toRadians(-90)))
