@@ -36,9 +36,14 @@ public class AutoCoyoteV3 extends TeleOp {
                     arm.setTargetPosition(500);
                     arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
                     arm.setVelocity(Math.toRadians(720), AngleUnit.RADIANS);
-        })
+                })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () ->{
                     claw.setPosition(0);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
+                    arm.setTargetPosition(10);
+                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    arm.setVelocity(Math.toRadians(720), AngleUnit.RADIANS);
                 })
                 .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
                 .lineToSplineHeading(new Pose2d(-60,65,Math.toRadians(-90)))
