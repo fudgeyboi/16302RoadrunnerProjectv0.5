@@ -45,6 +45,7 @@ public class TeleOp extends LinearOpMode {
         ControlHub_VoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         eintake = hardwareMap.get(Servo.class, "eintake");
         intake = hardwareMap.get(CRServo.class, "intake");
+        claw = hardwareMap.get(Servo.class, "claw");
         armExtend = 0;
 
         // Put initialization blocks here.
@@ -69,8 +70,9 @@ public class TeleOp extends LinearOpMode {
                     );
 
                 drive.update();
-                liftkit.setPower(-gamepad1.right_stick_y);
-                slide.setPower(gamepad2.right_trigger);
+                liftkit.setPower(-gamepad2.right_stick_y);
+                slide.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+                intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
                 arm.setVelocity(120*gamepad2.left_stick_y,AngleUnit.DEGREES);
                 /*armExtend += 50*gamepad2.left_stick_y;
                 if (armExtend > 750) {
@@ -82,19 +84,25 @@ public class TeleOp extends LinearOpMode {
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setVelocity(Math.toRadians(1080), AngleUnit.RADIANS);*/
 
-                if (gamepad2.right_trigger >= 0.9) {
+                if (gamepad1.right_trigger >= 0.9) {
                     launch.setPosition(0);
                 }
-                if (gamepad2.a) {
-                    llaunch.setPosition(0.415);
+                if (gamepad2.right_bumper) {
+                    claw.setPosition(0.95);
                 }
-                if (gamepad2.b) {
-                    llaunch.setPosition(0);
+                if (gamepad2.left_bumper) {
+                    claw.setPosition(1);
                 }
                 if (gamepad1.a) {
-                    lift.setPosition(1);
+                    llaunch.setPosition(0.415);
                 }
                 if (gamepad1.b) {
+                    llaunch.setPosition(0);
+                }
+                if (gamepad2.a) {
+                    lift.setPosition(1);
+                }
+                if (gamepad2.b) {
                     lift.setPosition(0);
                 }
                 telemetry.addData("Arm Position (TICKS)", arm.getCurrentPosition());
