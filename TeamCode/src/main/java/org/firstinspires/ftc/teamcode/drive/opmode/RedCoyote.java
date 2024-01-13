@@ -1,33 +1,37 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import android.util.Size;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.google.blocks.ftcrobotcontroller.util.CurrentGame;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 //Primary autonomous OpMode
 @Autonomous(group = "drive")
 //@Disabled
-public class AutoCoyoteV3 extends TeleOp {
+public class RedCoyote extends TeleOp {
     private DcMotorEx arm;
+    private double armtarget;
+    private double i;
+    private double d;
+    private double p;
+    private double current_time;
+    private double current_error;
+    private double current_position;
+    private double output;
+    private double k_p;
+    private double k_i;
+    private double k_d;
+    private double max_i;
+    private double previous_time;
+    private double previous_error;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         launch = hardwareMap.get(Servo.class, "launch");
@@ -42,30 +46,30 @@ public class AutoCoyoteV3 extends TeleOp {
         telemetry.update();
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        drive.setPoseEstimate(new Pose2d(-60,12,Math.toRadians(0)));
-        TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(-60,12,Math.toRadians(0)))
-                .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
+        drive.setPoseEstimate(new Pose2d(60,12,Math.toRadians(180)));
+        TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(60,12,Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(36,48,Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    arm.setTargetPosition(500);
-                    arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-                    arm.setVelocity(Math.toRadians(720), AngleUnit.RADIANS);
+                    armtarget = 500;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () ->{
                     claw.setPosition(1);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                    arm.setTargetPosition(10);
-                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    arm.setVelocity(Math.toRadians(720), AngleUnit.RADIANS);
+                    armtarget = 10;
                 })
-                .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(-63,65,Math.toRadians(-90)))
-                .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
+                .lineToSplineHeading(new Pose2d(60,48,Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(63,65,Math.toRadians(-90)))
+                .UNSTABLE_addTemporalMarkerOffset(-3, () -> {
                     eintake.setPosition(1);
                 })
                 .build();
 
         drive.followTrajectorySequenceAsync(trajsq);
+        k_d = 0;
+        k_i = 0;
+        k_p = 2;
+        max_i = 1;
 
         /*AprilTagProcessor myAprilTagProcessor;
 
@@ -99,8 +103,29 @@ public class AutoCoyoteV3 extends TeleOp {
                 .build();*/
 
         waitForStart();
-        while(opModeIsActive()){
+        resetRuntime();
+        while(opModeIsActive()) {
             drive.update();
+            current_time = getRuntime();
+            current_error = armtarget - current_position;
+            current_position = arm.getCurrentPosition();
+
+            p = k_p * current_error;
+
+            i += k_i * (current_error * (current_time - previous_time));
+
+            if (i > max_i) {
+                i = max_i;
+            } else if (i < -max_i) {
+                i = -max_i;
+            }
+            d = k_d * (current_error - previous_error) / (current_time - previous_time);
+
+            output = p + i + d;
+
+            previous_error = current_error;
+            previous_time = current_time;
+            arm.setPower(output);
         };
     }
 }
