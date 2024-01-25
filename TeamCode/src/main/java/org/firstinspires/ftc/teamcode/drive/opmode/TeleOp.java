@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class TeleOp extends LinearOpMode {
 
     private DcMotorEx arm;
-    public Servo claw;
+    public CRServo claw;
     public Servo launch;
     public DcMotor liftkit;
     public DcMotor slide;
@@ -26,7 +26,12 @@ public class TeleOp extends LinearOpMode {
     public VoltageSensor ControlHub_VoltageSensor;
     public Servo eintake;
     public CRServo intake;
+    public CRServo counterroller;
     private int armExtend;
+    private double leftstickxmod;
+    private double rightstickxmod;
+    private double leftstickymod;
+    private double launchextend;
 
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
@@ -45,12 +50,15 @@ public class TeleOp extends LinearOpMode {
         ControlHub_VoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         eintake = hardwareMap.get(Servo.class, "eintake");
         intake = hardwareMap.get(CRServo.class, "intake");
-        claw = hardwareMap.get(Servo.class, "claw");
+        claw = hardwareMap.get(CRServo.class, "claw");
+        counterroller = hardwareMap.get(CRServo.class, "counterroller");
         armExtend = 0;
+        launchextend = 0;
 
         // Put initialization blocks here.
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftkit.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launch.setDirection(Servo.Direction.FORWARD);
         arm.setVelocityPIDFCoefficients(2,2,3,1);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,12 +68,15 @@ public class TeleOp extends LinearOpMode {
             eintake.setPosition(0);
             // Put run blocks here.
             while (opModeIsActive()) {
+                leftstickxmod = gamepad1.left_stick_x*0.4;
+                leftstickymod = gamepad1.left_stick_y*0.5;
+                rightstickxmod = gamepad1.right_stick_x*0.5;
                 // Put loop blocks here.
                 drive.setWeightedDrivePower(
                         new Pose2d(
-                                gamepad1.left_stick_y,
-                                gamepad1.right_stick_x,
-                                -gamepad1.left_stick_x
+                                leftstickymod,
+                                rightstickxmod,
+                                -leftstickxmod
                         )
                     );
 
@@ -73,32 +84,25 @@ public class TeleOp extends LinearOpMode {
                 liftkit.setPower(-gamepad2.right_stick_y);
                 slide.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
                 intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+                counterroller.setPower(gamepad2.left_trigger-gamepad2.right_trigger);
                 arm.setVelocity(120*gamepad2.left_stick_y,AngleUnit.DEGREES);
-                /*armExtend += 50*gamepad2.left_stick_y;
-                if (armExtend > 750) {
-                    armExtend = 750;
-                } else if (armExtend <= 10) {
-                    armExtend = 10;
-                }
-                arm.setTargetPosition(armExtend);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm.setVelocity(Math.toRadians(1080), AngleUnit.RADIANS);*/
-
-                if (gamepad1.right_trigger >= 0.9) {
-                    launch.setPosition(0);
-                }
-                if (gamepad2.right_bumper) {
-                    claw.setPosition(0.95);
-                }
                 if (gamepad2.left_bumper) {
-                    claw.setPosition(1);
+                    claw.setPower(1);
+                } else if (gamepad2.right_bumper) {
+                    claw.setPower(-1);
+                } else {
+                    claw.setPower(0);
                 }
-                if (gamepad1.a) {
-                    llaunch.setPosition(0.415);
+                launchextend += gamepad1.left_trigger/150;
+                if (launchextend > 1) {
+                    launchextend = 1;
+                } else if (launchextend < 0) {
+                    launchextend = 0;
                 }
-                if (gamepad1.b) {
-                    llaunch.setPosition(0);
+                if (gamepad1.left_bumper) {
+                    launchextend = 0;
                 }
+                llaunch.setPosition(launchextend);
                 if (gamepad2.a) {
                     lift.setPosition(1);
                 }

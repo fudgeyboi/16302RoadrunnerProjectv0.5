@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -29,6 +32,8 @@ public class RedCoyote extends TeleOp {
     private double max_i;
     private double previous_time;
     private double previous_error;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -40,7 +45,7 @@ public class RedCoyote extends TeleOp {
         llaunch = hardwareMap.get(Servo.class, "llaunch");
         lift = hardwareMap.get(Servo.class, "lift");
         ControlHub_VoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
-        claw = hardwareMap.get(Servo.class, "claw");
+        claw = hardwareMap.get(CRServo.class, "claw");
         eintake = hardwareMap.get(Servo.class, "eintake");
         telemetry.addLine("Ready");
         telemetry.update();
@@ -53,7 +58,10 @@ public class RedCoyote extends TeleOp {
                     armtarget = 500;
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () ->{
-                    claw.setPosition(1);
+                    claw.setPower(1);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(0.1, () ->{
+                    claw.setPower(0);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
                     armtarget = 10;
@@ -104,6 +112,8 @@ public class RedCoyote extends TeleOp {
 
         waitForStart();
         resetRuntime();
+        previous_time = 0;
+        previous_error = 0;
         while(opModeIsActive()) {
             drive.update();
             current_time = getRuntime();
@@ -125,7 +135,9 @@ public class RedCoyote extends TeleOp {
 
             previous_error = current_error;
             previous_time = current_time;
+            telemetry.addData("Arm Power (requested)", output);
             arm.setPower(output);
+            telemetry.update();
         };
     }
 }
