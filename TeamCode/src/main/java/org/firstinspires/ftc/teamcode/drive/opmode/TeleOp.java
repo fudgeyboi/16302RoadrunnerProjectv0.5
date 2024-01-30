@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode {
 
-    private DcMotorEx arm;
+    public DcMotorEx arm;
     public CRServo claw;
     public Servo launch;
     public DcMotor liftkit;

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 //Primary autonomous OpMode
 @Autonomous(group = "drive")
 //@Disabled
-public class RedCoyote extends TeleOp {
+public class BlueCoyoteFar extends TeleOp {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -31,9 +31,9 @@ public class RedCoyote extends TeleOp {
         telemetry.update();
         arm.setDirection(DcMotorEx.Direction.FORWARD);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        drive.setPoseEstimate(new Pose2d(60,12,Math.toRadians(0)));
-        TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(60,12,Math.toRadians(0)))
-                .lineToSplineHeading(new Pose2d(36,48,Math.toRadians(-90)))
+        drive.setPoseEstimate(new Pose2d(-60,-36,Math.toRadians(0)));
+        TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(-60,12,Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
                     arm.setPower(0.25);
                 })
@@ -44,8 +44,8 @@ public class RedCoyote extends TeleOp {
                 .UNSTABLE_addTemporalMarkerOffset(0.1, () ->{
                     claw.setPower(0);
                 })
-                .lineToSplineHeading(new Pose2d(60,48,Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(60,60,Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(-60,60,Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
                     eintake.setPosition(1);
                 })

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -16,23 +14,6 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Autonomous(group = "drive")
 //@Disabled
 public class BlueCoyote extends TeleOp {
-    private DcMotorEx arm;
-    private double armtarget;
-    private double i;
-    private double d;
-    private double p;
-    private double current_time;
-    private double current_error;
-    private double current_position;
-    private double output;
-    private double k_p;
-    private double k_i;
-    private double k_d;
-    private double max_i;
-    private double previous_time;
-    private double previous_error;
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-    Telemetry dashboardTelemetry = dashboard.getTelemetry();
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -48,36 +29,29 @@ public class BlueCoyote extends TeleOp {
         eintake = hardwareMap.get(Servo.class, "eintake");
         telemetry.addLine("Ready");
         telemetry.update();
-        arm.setDirection(DcMotorEx.Direction.REVERSE);
+        arm.setDirection(DcMotorEx.Direction.FORWARD);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         drive.setPoseEstimate(new Pose2d(-60,12,Math.toRadians(0)));
         TrajectorySequence trajsq = drive.trajectorySequenceBuilder(new Pose2d(-60,12,Math.toRadians(0)))
                 .lineToSplineHeading(new Pose2d(-36,48,Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5, () -> {
-                    armtarget = 500;
+                    arm.setPower(0.25);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(-0.1, () ->{
+                    arm.setPower(0);
                     claw.setPower(1);
                 })
                 .UNSTABLE_addTemporalMarkerOffset(0.1, () ->{
                     claw.setPower(0);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(0.5, () -> {
-                    armtarget = 10;
-                })
                 .lineToSplineHeading(new Pose2d(-60,48,Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(-63,65,Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(-60,60,Math.toRadians(-90)))
                 .UNSTABLE_addTemporalMarkerOffset(-2, () -> {
                     eintake.setPosition(1);
                 })
                 .build();
 
         drive.followTrajectorySequenceAsync(trajsq);
-        k_d = 1;
-        k_i = 1;
-        k_p = 2;
-        max_i = 1;
 
         /*AprilTagProcessor myAprilTagProcessor;
 
@@ -109,41 +83,9 @@ public class BlueCoyote extends TeleOp {
                 .enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();*/
-
         waitForStart();
-        resetRuntime();
-        previous_time = 0;
-        previous_error = 0;
         while (opModeIsActive()) {
             drive.update();
-            telemetry.update();
-            dashboardTelemetry.update();
-            updateArm();
         }
-    }
-    public void updateArm() {
-
-        current_time = getRuntime();
-
-        current_position = arm.getCurrentPosition();
-        current_error = armtarget - current_position;
-
-        p = k_p * current_error;
-
-        i += k_i * (current_error * (current_time - previous_time));
-
-        if (i > max_i) {
-            i = max_i;
-        } else if (i < -max_i) {
-            i = -max_i;
-        }
-        d = k_d * (current_error - previous_error) / (current_time - previous_time);
-
-        output = (p + i + d)/1000;
-
-        previous_error = current_error;
-        previous_time = current_time;
-        dashboardTelemetry.addData("Arm Power (requested)", output);
-        arm.setPower(output);
     }
 }
