@@ -16,11 +16,11 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode {
 
-    public DcMotorEx arm;
+    private DcMotorEx arm;
     public CRServo claw;
     public Servo launch;
     public DcMotor liftkit;
-    public DcMotor slide;
+    public DcMotorEx slide;
     public Servo llaunch;
     public Servo lift;
     public VoltageSensor ControlHub_VoltageSensor;
@@ -33,9 +33,7 @@ public class TeleOp extends LinearOpMode {
     private double leftstickymod;
     private double launchextend;
 
-    /**
-     * This function is executed when this Op Mode is selected from the Driver Station.
-     */
+    /**This function is executed when this Op Mode is selected from the Driver Station*/
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -44,7 +42,7 @@ public class TeleOp extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         launch = hardwareMap.get(Servo.class, "launch");
         liftkit = hardwareMap.get(DcMotor.class, "beesechurger");
-        slide = hardwareMap.get(DcMotor.class, "slide");
+        slide = hardwareMap.get(DcMotorEx.class, "slide");
         llaunch = hardwareMap.get(Servo.class, "llaunch");
         lift = hardwareMap.get(Servo.class, "lift");
         ControlHub_VoltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -56,12 +54,12 @@ public class TeleOp extends LinearOpMode {
         launchextend = 0;
 
         // Put initialization blocks here.
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         liftkit.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launch.setDirection(Servo.Direction.FORWARD);
         arm.setVelocityPIDFCoefficients(2,2,3,1);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         waitForStart();
         if (opModeIsActive()) {
             telemetry.setDisplayFormat(Telemetry.DisplayFormat.CLASSIC);

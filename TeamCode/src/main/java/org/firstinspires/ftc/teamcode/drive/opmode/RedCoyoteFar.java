@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import java.util.Arrays;
 import java.util.List;
 
-//Primary autonomous OpMode
+/**Primary autonomous OpMode*/
 @Autonomous(group = "drive")
 //@Disabled
 public class RedCoyoteFar extends TeleOp {
