@@ -84,6 +84,9 @@ public class TeleOp extends LinearOpMode {
                 intake.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
                 counterroller.setPower(gamepad2.left_trigger-gamepad2.right_trigger);
                 arm.setVelocity(120*gamepad2.left_stick_y,AngleUnit.DEGREES);
+                if (gamepad1.right_bumper) {
+                    launch.setPosition(0);
+                }
                 if (gamepad2.left_bumper) {
                     claw.setPower(1);
                 } else if (gamepad2.right_bumper) {
@@ -91,15 +94,8 @@ public class TeleOp extends LinearOpMode {
                 } else {
                     claw.setPower(0);
                 }
-                launchextend += gamepad1.left_trigger/150;
-                if (launchextend > 1) {
-                    launchextend = 1;
-                } else if (launchextend < 0) {
-                    launchextend = 0;
-                }
-                if (gamepad1.left_bumper) {
-                    launchextend = 0;
-                }
+                launchextend += (gamepad1.right_trigger-gamepad1.left_trigger)/150;
+                llaunch.setPosition(launchextend);
                 llaunch.setPosition(launchextend);
                 if (gamepad2.a) {
                     lift.setPosition(1);
@@ -107,10 +103,8 @@ public class TeleOp extends LinearOpMode {
                 if (gamepad2.b) {
                     lift.setPosition(0);
                 }
-                telemetry.addData("Arm Position (TICKS)", arm.getCurrentPosition());
-                telemetry.addData("Arm Current Draw", arm.getCurrent(CurrentUnit.AMPS));
                 telemetry.addData("Voltage", ControlHub_VoltageSensor.getVoltage());
-                telemetry.addData("ArmVar", armExtend);
+                telemetry.addData("launch extension: ", launchextend);
                 if (gamepad1.back || gamepad2.back) {
                     requestOpModeStop();
                 }
